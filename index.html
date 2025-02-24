@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pic to Puzz</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #intro-page {
+            position: relative;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            max-width: 90%;
+            width: 100%;
+            box-sizing: border-box;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        #intro-page h1 {
+            font-size: clamp(2em, 6vw, 3em);
+            color: #00ffcc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+        }
+
+        #intro-page p {
+            font-size: clamp(1em, 3vw, 1.2em);
+            color: #e0e0e0;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+        }
+
+        #start-btn {
+            padding: 15px 40px;
+            font-size: clamp(1.2em, 4vw, 1.8em);
+            background: linear-gradient(45deg, #ff00cc, #00ffcc);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 15px #ff00cc, 0 0 30px #00ffcc;
+            animation: pulse 1.5s infinite;
+            transition: transform 0.3s;
+        }
+
+        #start-btn:hover, #start-btn:active {
+            transform: scale(1.1);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 15px #ff00cc, 0 0 30px #00ffcc; }
+            50% { box-shadow: 0 0 25px #ff00cc, 0 0 50px #00ffcc; }
+            100% { box-shadow: 0 0 15px #ff00cc, 0 0 30px #00ffcc; }
+        }
+
+        #game-page {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        #reference-container {
+            margin: 15px 0;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #reference {
+            max-width: clamp(120px, 30vw, 150px);
+            max-height: clamp(120px, 30vw, 150px);
+            border: 2px solid #00ffcc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        #upload-input, #clear-btn, #reshuffle-btn {
+            padding: 10px 20px;
+            font-size: clamp(0.9em, 2.5vw, 1em);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            color: #fff;
+            transition: transform 0.2s;
+        }
+
+        #upload-input {
+            background: #4CAF50;
+            width: clamp(150px, 40vw, 200px);
+        }
+
+        #clear-btn {
+            background: #ff4444;
+        }
+
+        #reshuffle-btn {
+            background: #ffaa00;
+        }
+
+        #upload-input:hover, #clear-btn:hover, #reshuffle-btn:hover {
+            transform: scale(1.05);
+        }
+
+        #puzzle-container {
+            position: relative;
+            width: clamp(280px, 85vw, 400px);
+            height: clamp(280px, 85vw, 400px);
+            border: 2px dashed #00ffcc;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            margin: 10px auto;
+        }
+
+        .puzzle-piece {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            touch-action: none;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 5px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            font-size: clamp(0.7em, 2vw, 0.9em);
+            color: #e0e0e0;
+            text-align: center;
+            width: 100%;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="intro-page">
+        <h1>Pic to Puzz</h1>
+        <p>Launch into an interstellar puzzle adventure! Upload your cosmic pics, vids, or GIFs and piece them together with precision. Ready to transcend dimensions?</p>
+        <button id="start-btn">Tap to Begin</button>
+        <p class="footer">Designed by Kofi Fosu | <a href="mailto:cosmoscoderr@gmail.com" style="color: #00ffcc;">cosmoscoderr@gmail.com</a></p>
+    </div>
+
+    <div id="game-page">
+        <div id="reference-container">
+            <img id="reference" alt="Reference Image">
+        </div>
+        <div id="controls">
+            <input type="file" id="upload-input" accept="image/*,video/*,.gif">
+            <button id="clear-btn">Clear</button>
+            <button id="reshuffle-btn">Reshuffle</button>
+        </div>
+        <div id="puzzle-container"></div>
+        <p class="footer">Designed by Kofi Fosu | <a href="mailto:cosmoscoderr@gmail.com" style="color: #00ffcc;">cosmoscoderr@gmail.com</a></p>
+    </div>
+
+    <script>
+        const introPage = document.getElementById('intro-page');
+        const gamePage = document.getElementById('game-page');
+        const startBtn = document.getElementById('start-btn');
+        const uploadInput = document.getElementById('upload-input');
+        const clearBtn = document.getElementById('clear-btn');
+        const reshuffleBtn = document.getElementById('reshuffle-btn');
+        const puzzleContainer = document.getElementById('puzzle-container');
+        const reference = document.getElementById('reference');
+        let currentMediaUrl = null;
+
+        startBtn.addEventListener('click', () => {
+            introPage.style.display = 'none';
+            gamePage.style.display = 'flex';
+        });
+
+        uploadInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                currentMediaUrl = URL.createObjectURL(file);
+                reference.src = currentMediaUrl;
+                createPuzzle(currentMediaUrl);
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            puzzleContainer.innerHTML = '';
+            reference.src = '';
+            uploadInput.value = '';
+            currentMediaUrl = null;
+        });
+
+        reshuffleBtn.addEventListener('click', () => {
+            if (currentMediaUrl) {
+                reshufflePuzzle();
+            }
+        });
+
+        function createPuzzle(mediaUrl) {
+            puzzleContainer.innerHTML = '';
+            const containerSize = puzzleContainer.offsetWidth;
+            const pieceSize = containerSize / 4; // 4x4 grid
+            const rows = 4;
+            const cols = 4;
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    piece.style.width = `${pieceSize}px`;
+                    piece.style.height = `${pieceSize}px`;
+                    piece.style.backgroundImage = `url(${mediaUrl})`;
+                    piece.style.backgroundSize = `${cols * pieceSize}px ${rows * pieceSize}px`;
+                    piece.style.backgroundPosition = `-${col * pieceSize}px -${row * pieceSize}px`;
+                    piece.dataset.row = row;
+                    piece.dataset.col = col;
+
+                    const randX = Math.random() * (window.innerWidth - pieceSize - puzzleContainer.offsetLeft);
+                    const randY = Math.random() * (window.innerHeight - pieceSize - puzzleContainer.offsetTop - 150);
+                    piece.style.left = `${randX}px`;
+                    piece.style.top = `${randY}px`;
+
+                    makeDraggable(piece, pieceSize, rows, cols);
+                    puzzleContainer.appendChild(piece);
+                }
+            }
+        }
+
+        function reshufflePuzzle() {
+            const pieces = document.querySelectorAll('.puzzle-piece');
+            const containerSize = puzzleContainer.offsetWidth;
+            const pieceSize = containerSize / 4;
+
+            pieces.forEach(piece => {
+                // Reset dragging ability if it was locked
+                piece.style.cursor = 'move';
+                piece.addEventListener('mousedown', startDragging);
+                piece.addEventListener('touchstart', startDragging, { passive: false });
+
+                // Randomize position again
+                const randX = Math.random() * (window.innerWidth - pieceSize - puzzleContainer.offsetLeft);
+                const randY = Math.random() * (window.innerHeight - pieceSize - puzzleContainer.offsetTop - 150);
+                piece.style.left = `${randX}px`;
+                piece.style.top = `${randY}px`;
+                piece.style.zIndex = 1;
+            });
+        }
+
+        function makeDraggable(piece, pieceSize, rows, cols) {
+            let isDragging = false;
+            let startX, startY;
+
+            piece.addEventListener('mousedown', startDragging);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDragging);
+
+            piece.addEventListener('touchstart', startDragging, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', stopDragging);
+
+            function startDragging(e) {
+                e.preventDefault();
+                isDragging = true;
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                startX = clientX - parseFloat(piece.style.left || 0);
+                startY = clientY - parseFloat(piece.style.top || 0);
+                piece.style.zIndex = 1000;
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                const newX = clientX - startX;
+                const newY = clientY - startY;
+                piece.style.left = `${newX}px`;
+                piece.style.top = `${newY}px`;
+            }
+
+            function stopDragging() {
+                if (!isDragging) return;
+                isDragging = false;
+                piece.style.zIndex = 1;
+
+                const targetX = piece.dataset.col * pieceSize;
+                const targetY = piece.dataset.row * pieceSize;
+                const currentX = parseFloat(piece.style.left);
+                const currentY = parseFloat(piece.style.top);
+
+                if (Math.abs(currentX - targetX) < 20 && Math.abs(currentY - targetY) < 20) {
+                    piece.style.left = `${targetX}px`;
+                    piece.style.top = `${targetY}px`;
+                    piece.style.cursor = 'default';
+                    piece.removeEventListener('mousedown', startDragging);
+                    piece.removeEventListener('touchstart', startDragging);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
